@@ -12,8 +12,8 @@ export async function POST(req, res) {
         email,
       },
       include: {
-        role: true
-      }
+        role: true,
+      },
     });
 
     if (!user) {
@@ -60,6 +60,8 @@ export async function POST(req, res) {
   } catch (err) {
     console.log(err);
 
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse(err?.message || "Internal Server Error", {
+      status: 500,
+    });
   }
 }
