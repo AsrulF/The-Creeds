@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -19,37 +20,49 @@ model User {
   email        String   @unique
   password     String   @db.Text
   access_token String?  @db.Text
-  role         UserRole
+  role         RoleUser @relation(fields: [role_id], references: [id])
+  role_id      String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  products Product[]
+  
   orders   Order[]
 
   @@map("users")
+}
+
+model RoleUser {
+  id          String @id @default(uuid())
+  rolename    String @unique
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  users       User[]
+  
+
+  @@map("roleuser")
 }
 
 model Product {
   id          String  @id @default(uuid())
   title       String
   price       Int
-  description String?
+  description String? @db.Text
   category_id String
-  user_id     String
+
   company     String
   stock       Int
   shipping    Boolean @default(false)
-  featured    Boolean @default(false)
   colors      Json
   images      Json
 
   category Category @relation(fields: [category_id], references: [id])
-  user     User     @relation(fields: [user_id], references: [id])
 
+  order_items OrderItems[]
+  
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
-  order_items OrderItems[]
 
   @@map("products")
 }
@@ -61,6 +74,8 @@ model Category {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   products   Product[]
+
+  @@map("categories")
 }
 
 model Order {
@@ -94,6 +109,15 @@ model OrderItems {
   updated_at DateTime @updatedAt
 
   @@map("order_items")
+}
+
+model File {
+  id          String @id @default(uuid())
+  filename    String @unique
+  fileblob    Bytes
+  created_at  DateTime  @default(now())
+
+  @@map("files")
 }
 
 enum UserRole {

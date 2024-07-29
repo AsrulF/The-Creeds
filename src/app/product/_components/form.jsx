@@ -1,29 +1,32 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-export default function Form({ categories }) {
+export default function Form({ categories, products }) {
   const token = Cookies.get("currentUser");
   const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
-  const [form, setForm] = useState({
-    title: "",
-    price: 0,
-    description: "",
-    category_id: "",
-    company: "",
-    stock: 0,
-    shipping: false,
-    featured: false,
-    colors: ["#000"],
-    images: [],
-  });
+  const [form, setForm] = useState(
+    products
+      ? products
+      : {
+          title: "",
+          price: 0,
+          description: "",
+          category_id: "",
+          company: "",
+          stock: 0,
+          shipping: false,
+          featured: false,
+          colors: ["#000"],
+          images: [],
+        },
+  );
 
   function handleOnChange(e) {
     setForm({
@@ -51,17 +54,32 @@ export default function Form({ categories }) {
     };
 
     try {
-      const response = await axios.post(
-        "/api/products",
-        {
-          ...form,
-          featured: JSON.parse(form.featured),
-          shipping: JSON.parse(form.shipping),
-        },
-        {
-          headers,
-        },
-      );
+      if (products) {
+        const response = await axios.patch(
+          `/api/products/${data.id}`,
+          {
+            ...form,
+            price: Number(form.price),
+            stock: Number(form.stock),
+          },
+          {
+            headers,
+          },
+        );
+      } else {
+        const response = await axios.post(
+          `/api/products`,
+          {
+            ...form,
+            price: Number(form.price),
+            stock: Number(form.stock),
+            shipping: JSON.parse(form.shipping),
+          },
+          {
+            headers,
+          },
+        );
+      }
 
       router.push("/product");
       router.refresh();
@@ -254,32 +272,6 @@ export default function Form({ categories }) {
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                 <div className="w-full xl:w-1/2">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Featured
-                  </label>
-                  <select
-                    required
-                    name="featured"
-                    value={form.featured}
-                    onChange={handleOnChange}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  >
-                    <option
-                      value={true}
-                      className="text-body dark:text-bodydark"
-                    >
-                      Yes
-                    </option>
-                    <option
-                      value={false}
-                      className="text-body dark:text-bodydark"
-                    >
-                      No
-                    </option>
-                  </select>
-                </div>
-
-                <div className="w-full xl:w-1/2">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                     Shipping
                   </label>
                   <select
@@ -388,7 +380,7 @@ export default function Form({ categories }) {
                 disabled={isLoading}
                 className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
               >
-                Submit
+                {products ? "Update" : "Submit"}
               </button>
             </div>
           </form>
@@ -399,7 +391,7 @@ export default function Form({ categories }) {
           <div key={i} className="relative aspect-square rounded-md bg-white">
             <Image
               fill
-              src={`/uploads/${image}`}
+              src={`/api/images/${image}`}
               alt="Preview"
               className="rounded-md object-cover"
             />

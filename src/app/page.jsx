@@ -1,5 +1,6 @@
 import CardDataStats from "@/components/CardDataStats";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { db } from "/src/lib/db.js";
 
 export const metadata = {
   title:
@@ -8,11 +9,34 @@ export const metadata = {
 };
 
 export default async function Home() {
+  const orders = await db.order.count();
+  const product = await db.product.count();
+  const orderItems = await db.orderItems.findMany();
+
+  const customer = await db.roleUser.findFirst({
+    where: {
+      rolename: "CUSTOMER"
+    },
+    include: {
+      users: true
+    }
+  })
+
+  // console.log(customer)
+
+  let totalItems = 0;
+  for (const item of orderItems) {
+    const totalOrderItems = item.quantity;
+    totalItems += totalOrderItems;
+  }
+
+  // console.log(totalItems)
+
   const dashboardData = [
     {
       id: 1,
       title: "Total Products",
-      value: 0,
+      value: `${product}`,
       icon: (
         <svg
           className="fill-primary dark:fill-white"
@@ -36,7 +60,7 @@ export default async function Home() {
     {
       id: 2,
       title: "Total Orders",
-      value: 0,
+      value: `${orders}`,
       icon: (
         <svg
           className="fill-primary dark:fill-white"
@@ -53,7 +77,7 @@ export default async function Home() {
     {
       id: 3,
       title: "Total Items Sold",
-      value: 0,
+      value: `${totalItems}`,
       icon: (
         <svg
           className="fill-primary dark:fill-white"
@@ -77,7 +101,7 @@ export default async function Home() {
     {
       id: 4,
       title: "Total Customers",
-      value: 0,
+      value: customer.users.length,
       icon: (
         <svg
           className="fill-primary dark:fill-white"

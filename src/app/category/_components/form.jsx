@@ -6,33 +6,45 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-export default function Form() {
+export default function Form({ data }) {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(data ? data.name : "");
   const [isLoading, setIsLoading] = useState(false);
   const token = Cookies.get("currentUser");
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `${token}`,
+  };
 
   function handleChange(event) {
     setName(event.target.value);
-  }
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
 
     try {
-      await axios.post(
-        `/api/categories`,
-        {
-          name,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`,
+      if (data) {
+        await axios.patch(
+          `/api/categories/${data.id}`,
+          {
+            name: name,
           },
-        },
-      );
+          {
+            headers: headers,
+          }
+        );
+      } else { 
+        await axios.post(
+          `/api/categories`,
+          {
+            name,
+          },
+          {
+            headers: headers,
+          },
+      )}
 
       router.push("/category");
       router.refresh();
@@ -73,7 +85,7 @@ export default function Form() {
             disabled={isLoading}
             className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
           >
-            Submit
+            { data ? "Update" : "Submit" }
           </button>
         </form>
       </div>

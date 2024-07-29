@@ -11,6 +11,9 @@ export async function POST(req, res) {
       where: {
         email,
       },
+      include: {
+        role: true
+      }
     });
 
     if (!user) {
@@ -28,7 +31,7 @@ export async function POST(req, res) {
       return new NextResponse("Password is incorrect", { status: 401 });
     }
 
-    if (user.role !== "ADMIN") {
+    if (user.role.rolename !== "ADMIN") {
       return new NextResponse("You are not authorized to access this route", {
         status: 401,
       });

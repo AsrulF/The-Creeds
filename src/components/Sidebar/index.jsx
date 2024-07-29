@@ -55,20 +55,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
+      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-        <Link href="/">
-          <Image
-            width={176}
-            height={32}
-            src={"/images/logo/logo.svg"}
-            alt="Logo"
-            priority
-          />
+        <Link href="/" className="text-center text-3xl font-bold text-black">
+          <h1>The Creeds Admin</h1>
         </Link>
 
         <button
@@ -249,6 +243,27 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     />
                   </svg>
                   Order
+                </Link>
+                <Link
+                  href="/image"
+                  className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes("image") && "bg-graydark dark:bg-meta-4"
+                  }`}
+                >
+                  <svg
+                    className="fill-current"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20.5 3h-17c-1.379 0-2.5 1.122-2.5 2.5v12c0 1.379 1.121 2.5 2.5 2.5h17c1.378 0 2.5-1.121 2.5-2.5v-12c0-1.378-1.122-2.5-2.5-2.5zm-8 12c-2.481 0-4.5-2.019-4.5-4.5s2.019-4.5 4.5-4.5 4.5 2.019 4.5 4.5-2.019 4.5-4.5 4.5zm4.5-7c-.827 0-1.5.673-1.5 1.5s.673 1.5 1.5 1.5 1.5-.673 1.5-1.5-.673-1.5-1.5-1.5zm-4.5 10c-3.584 0-6.5-2.916-6.5-6.5s2.916-6.5 6.5-6.5 6.5 2.916 6.5 6.5-2.916 6.5-6.5 6.5z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Images
                 </Link>
               </li>
               {/* <!-- Menu Item Order --> */}

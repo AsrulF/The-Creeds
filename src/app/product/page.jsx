@@ -12,8 +12,13 @@ export const metadata = {
 export default async function ProductPage() {
   const products = await db.product.findMany({
     include: {
-      category: true,
+      category: true
     },
+    orderBy: {
+      category : {
+        name: "asc"
+      }
+    }
   });
 
   return (

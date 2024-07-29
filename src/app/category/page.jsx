@@ -12,7 +12,7 @@ export const metadata = {
 export default async function CategoryPage() {
   const categories = await db.category.findMany({
     orderBy: {
-      created_at: "asc",
+      name: "asc",
     },
   });
 

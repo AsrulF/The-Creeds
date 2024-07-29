@@ -1,16 +1,40 @@
 "use client";
 
+import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function Table({ categories }) {
   const router = useRouter();
   const token = Cookies.get("currentUser");
 
   // Buatlah fungsi untuk mendelete category berdasarkan id
-  async function handleDelete(id) {}
+  async function handleDelete(id) {
+    try {
+      await axios.delete(`/api/categories/${id}`, {
+        headers: {
+          Authorization: `${Cookies.get("currentUser")}`,
+        },
+      });
 
+      Swal.fire({
+        title: "Success",
+        text: "Category deleted",
+        icon: "success",
+      });
+
+      router.refresh();
+    } catch (err) {
+    Swal.fire({
+      title: "Error",
+      text: err?.request?.response || "Internal server error",
+      icon: "error"
+      });
+    }
+  }
+  
   return (
     <div className="overflow-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex items-center justify-between px-4 py-6 md:px-6 xl:px-7.5">

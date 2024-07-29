@@ -7,14 +7,212 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
 
 export default function Table({ products }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const router = useRouter();
   const token = Cookies.get("currentUser");
 
+  // console.log(products);
+
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(products.map((product) => product.id));
+    }
+    setIsAllSelected(!isAllSelected);
+  };
+
   // Buatlah fungsi untuk mendelete product berdasarkan id
-  async function handleDelete(id) {}
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/products/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      router.refresh();
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        title: "Error",
+        text: "Internal Server Error",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleAddBulk = async (event) => {
+    try {
+      setSelectedProducts([]);
+      const file = event.target.files[0];
+      if (!file) {
+        Swal.fire({
+          title: "Error",
+          text: "No files",
+          icon: "error",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      await axios.post(`/api/products/bulk`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      Swal.fire({
+        title: "Success",
+        text: "Bulk add success",
+        icon: "success",
+      });
+
+      router.refresh();
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        title: "Error",
+        text: "Add bulk product failed",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleSelectProduct = (id) => {
+    setIsAllSelected(false);
+    setSelectedProducts(
+      selectedProducts.includes(id)
+        ? selectedProducts.filter((productId) => productId !== id)
+        : [...selectedProducts, id],
+    );
+  };
+
+  const exportToExcel = (products) => {
+    let data = [];
+
+    // Buat header secara dinamis
+    const header = [
+      "Id",
+      "Title",
+      "Price",
+      "Category",
+      "Stock",
+      "Shipping",
+      "Company",
+      "Colors",
+      "Images",
+    ];
+    data.push(header);
+
+    // Tambahkan data produk
+    products.forEach((product) => {
+      const row = [
+        product.id,
+        product.title,
+        product.price,
+        product.category.name,
+        product.stock,
+        product.shipping ? "Yes" : "No",
+        product.company,
+        product.colors.join(","),
+        product.images.join(","),
+      ];
+      data.push(row);
+    });
+
+    // Buat worksheet dan workbook
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
+
+    // Tulis file ke sistem
+    XLSX.writeFile(workbook, "products.xlsx");
+  };
+
+  const handleExport = () => {
+    const findProducts = products.filter((product) =>
+      selectedProducts.includes(product.id),
+    );
+    exportToExcel(findProducts);
+  };
+
+  const handleBulkUpdate = async (event) => {
+    try {
+      setSelectedProducts([]);
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const { data } = await axios.patch(`/api/products/bulk`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      Swal.fire({
+        title: "Success",
+        text: "Bulk update success",
+        icon: "success",
+      });
+
+      router.refresh();
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        title: "Error",
+        text: "Update bulk product failed",
+        icon: "error",
+      });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      const confirm = await Swal.fire({
+        title: "Are you sure?",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Yes",
+        denyButtonText: No,
+        icon: "question",
+      });
+
+      if (confirm.isConfirmed) {
+        await axios.post(`/api/products/delete`, {
+          ids: selectedProducts,
+        });
+
+        setSelectedProducts([]);
+        setIsAllSelected(false);
+
+        Swal.fire({
+          title: "Success",
+          text: "Bulk delete success",
+          icon: "success",
+        });
+        router.refresh();
+      }
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        title: "Error",
+        text: "Delete bulk product failed",
+        icon: "error",
+      });
+    }
+  };
+
+  console.log(selectedProducts)
 
   return (
     <div className="overflow-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -22,14 +220,54 @@ export default function Table({ products }) {
         <h4 className="text-xl font-semibold text-black dark:text-white">
           Products
         </h4>
-        <Link href="/product/create">
-          <button className="inline-block rounded bg-primary px-10 py-3 font-medium text-white transition-all hover:bg-opacity-90">
-            Add Product
-          </button>
-        </Link>
-      </div>
 
+        <div className="space-x-2">
+          <Link href="/product/create">
+            <button className="inline-block rounded bg-primary px-5 py-2 font-medium text-white transition-all hover:bg-opacity-90">
+              Add Product
+            </button>
+          </Link>
+          {/* Bulk Add */}
+          <label className="inline-block cursor-pointer rounded bg-secondary px-5 py-2 font-medium text-white transition-all hover:bg-opacity-90">
+            Bulk Add
+            <input
+              type="file"
+              className="hidden"
+              accept=".xls,.xlsx"
+              onChange={handleAddBulk}
+            />
+          </label>
+          <label className="inline-block cursor-pointer rounded bg-orange-500 px-5 py-2 font-medium text-white transition-all hover:bg-opacity-90">
+            Bulk Update
+            <input
+              type="file"
+              className="hidden"
+              accept=".xls,.xlsx"
+              onChange={handleBulkUpdate}
+            />
+          </label>
+          <button
+            onClick={handleBulkDelete}
+            className="inline-block cursor-pointer rounded bg-red px-5 py-2 font-medium text-white transition-all hover:bg-opacity-90"
+          >
+            Bulk Delete
+          </button>
+          <button
+            onClick={handleExport}
+            className="inline-block rounded bg-green-500 px-5 py-2 font-medium text-white transition-all hover:bg-opacity-90"
+          >
+            Export
+          </button>
+        </div>
+      </div>
       <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-10 md:px-6 2xl:px-7.5">
+        <div className="col-span-1 flex items-center">
+          <input
+            type="checkbox"
+            checked={isAllSelected}
+            onChange={handleSelectAll}
+          />
+        </div>
         <div className="col-span-2 flex items-center">
           <p className="font-medium">Product Name</p>
         </div>
@@ -49,21 +287,24 @@ export default function Table({ products }) {
           <p className="font-medium">Company</p>
         </div>
         <div className="col-span-1 flex items-center">
-          <p className="font-medium">Featured</p>
-        </div>
-        <div className="col-span-1 flex items-center">
           <p className="font-medium">Shipping</p>
         </div>
         <div className="col-span-1 flex items-center">
           <p className="font-medium">Action</p>
         </div>
       </div>
-
       {products.map((product, key) => (
         <div
           className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-10 md:px-6 2xl:px-7.5"
           key={key}
         >
+          <div className="col-span-1 flex items-center">
+            <input
+              type="checkbox"
+              checked={selectedProducts.includes(product.id)}
+              onChange={() => handleSelectProduct(product.id)}
+            />
+          </div>
           <div className="col-span-2 flex items-center">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div className="h-12.5 w-15 overflow-hidden rounded-md">
@@ -111,11 +352,6 @@ export default function Table({ products }) {
           <div className="col-span-1 flex items-center">
             <p className="text-sm text-black dark:text-white">
               {product.company}
-            </p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">
-              {product.featured ? "Yes" : "No"}
             </p>
           </div>
           <div className="col-span-1 flex items-center">
@@ -187,6 +423,7 @@ export default function Table({ products }) {
           No Data
         </div>
       )}
+         
     </div>
   );
 }

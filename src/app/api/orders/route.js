@@ -17,7 +17,7 @@ export async function POST(req) {
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_KEY);
 
     // Ambil semua data dari body request
-    const { address, postal_code, payment_method, country, products } =
+    const { address, postal_code, payment_method, country, user_id, products } =
       await req.json();
 
     // Cek apakah user memasukan products
@@ -67,7 +67,7 @@ export async function POST(req) {
           postal_code,
           payment_method,
           country,
-          user_id: decoded.id,
+          user_id,
         },
       });
 
