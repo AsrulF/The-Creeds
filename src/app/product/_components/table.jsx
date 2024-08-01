@@ -309,7 +309,7 @@ export default function Table({ products }) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div className="h-12.5 w-15 overflow-hidden rounded-md">
                 <Image
-                  src={`/uploads/${product.images[0]}`}
+                  src={`/api/images/${product.images[0]}`}
                   width={60}
                   height={50}
                   alt="Product"

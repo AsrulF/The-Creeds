@@ -110,7 +110,7 @@ export default function Table({ orders }) {
           <p className="font-medium">Action</p>
         </div>
       </div>
-      {orders.map((order, key) => (
+      { orders ? orders.map((order, key) => (
         <div
           className="grid grid-cols-5 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
           key={key}
@@ -174,7 +174,7 @@ export default function Table({ orders }) {
             </Link>
           </div>
         </div>
-      ))}
+      )) : <p>Orders Not Found</p>}
     </div>
   );
 }
