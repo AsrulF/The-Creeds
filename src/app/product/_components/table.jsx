@@ -212,7 +212,7 @@ export default function Table({ products }) {
     }
   };
 
-  console.log(selectedProducts)
+  console.log(selectedProducts);
 
   return (
     <div className="overflow-auto rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -261,7 +261,7 @@ export default function Table({ products }) {
         </div>
       </div>
       <div className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-10 md:px-6 2xl:px-7.5">
-        <div className="col-span-1 flex items-center">
+        <div className="col-span-1 flex items-center justify-center">
           <input
             type="checkbox"
             checked={isAllSelected}
@@ -298,23 +298,23 @@ export default function Table({ products }) {
           className="grid grid-cols-6 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-10 md:px-6 2xl:px-7.5"
           key={key}
         >
-          <div className="col-span-1 flex items-center">
+          <div className="col-span-1 flex items-center justify-center">
             <input
               type="checkbox"
               checked={selectedProducts.includes(product.id)}
               onChange={() => handleSelectProduct(product.id)}
             />
           </div>
-          <div className="col-span-2 flex items-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 overflow-hidden rounded-md">
-                <Image
-                  src={`/api/images/${product.images[0]}`}
-                  width={60}
-                  height={50}
-                  alt="Product"
-                />
-              </div>
+          <div className="col-span-2 flex items-center justify-between gap-3">
+            <div className="w-1/3 flex items-center justify-center">
+              <Image
+                src={`/api/images/${product.images[0]}`}
+                width={60}
+                height={50}
+                alt="Product"
+              />
+            </div>
+            <div className="w-2/3">
               <p className="text-sm text-black dark:text-white">
                 {product.title}
               </p>
