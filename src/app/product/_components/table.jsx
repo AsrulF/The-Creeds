@@ -306,7 +306,7 @@ export default function Table({ products }) {
             />
           </div>
           <div className="col-span-2 flex items-center justify-between gap-3">
-            <div className="w-1/3 flex items-center justify-center">
+            <div className="flex w-1/3 items-center justify-center">
               <Image
                 src={`/api/images/${product.images[0]}`}
                 width={60}

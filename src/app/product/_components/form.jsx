@@ -391,7 +391,7 @@ export default function Form({ categories, products }) {
           <div key={i} className="relative aspect-square rounded-md bg-white">
             <Image
               fill
-              src={`/api/images/${image}`}
+              src={`${process.env.NEXT_PUBLIC_API_URL_IMG}/${image}`}
               alt="Preview"
               className="rounded-md object-cover"
             />

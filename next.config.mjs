@@ -10,7 +10,7 @@ const nextConfig = {
           // Allow for specific domains to have access or * for all
           {
             key: "Access-Control-Allow-Origin",
-            value: process.env.ALLOWED_ORIGIN
+            value: process.env.ALLOWED_ORIGIN,
             // DOES NOT WORK
             // value: process.env.ALLOWED_ORIGIN,
           },
@@ -27,6 +27,14 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: process.env.PROTOCOL,
+        hostname: process.env.HOSTNAME,
+      },
+    ],
   },
 };
 export default nextConfig;

@@ -36,9 +36,9 @@ export default function TableOrder({ orderItems, ordersData }) {
           className="grid grid-cols-5 border-t border-stroke px-4 py-4.5 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5"
         >
           <div className="col-span-3 flex items-center justify-between gap-3">
-            <div className="w-1/3 flex items-center justify-center">
+            <div className="flex w-1/3 items-center justify-center">
               <Image
-                src={`/api/images/${orderItem.product.images[0]}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL_IMG}/${orderItem.product.images[0]}`}
                 width={60}
                 height={50}
                 alt="Product"
