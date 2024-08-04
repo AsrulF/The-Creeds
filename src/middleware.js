@@ -1,42 +1,51 @@
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-    if (request.nextUrl.pathname.startsWith("/api")) {
-        const response = NextResponse.next();
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    const response = NextResponse.next();
 
-        response.headers.set("Access-Control-Allow-Origin", "*");
-        response.headers.set(
-            "Access-Control-Allow-Methods",
-            "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-        );
-        response.headers.set(
-            "Access-Control-Allow-Headers",
-            "Content-Type, Authorization",
-        );
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      "https://thecreeds.site",
+    );
 
-        if (request.method === "OPTIONS") {
-            return new NextResponse(null, { status: 204 });
-        }
+    response.headers.set(
+      "Access-Control-Allow-Origin",
+      "http://localhost:3000",
+    );
 
-        return response;
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    );
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
+
+    if (request.method === "OPTIONS") {
+      return new NextResponse(null, { status: 204 });
     }
 
-    const currentUser = request.cookies.get("currentUser")?.value;
+    return response;
+  }
 
-    if (currentUser) {
-        return NextResponse.next();
-    } else {
-        return NextResponse.redirect(new URL("/auth/signin", request.url));
-    }
+  const currentUser = request.cookies.get("currentUser")?.value;
+
+  if (currentUser) {
+    return NextResponse.next();
+  } else {
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
+  }
 }
 
 export const config = {
-    matcher: [
-        "/",
-        "/user",
-        "/category/:path*",
-        "/product/:path*",
-        "/order/:path*",
-        "/api/:path*",
-    ],
+  matcher: [
+    "/",
+    "/user",
+    "/category/:path*",
+    "/product/:path*",
+    "/order/:path*",
+    "/api/:path*",
+  ],
 };
