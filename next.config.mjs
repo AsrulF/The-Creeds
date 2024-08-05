@@ -14,12 +14,6 @@ const nextConfig = {
             // DOES NOT WORK
             // value: process.env.ALLOWED_ORIGIN,
           },
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "http://localhost:3000",
-            // DOES NOT WORK
-            // value: process.env.ALLOWED_ORIGIN,
-          },
           // Allows for specific methods accepted
           {
             key: "Access-Control-Allow-Methods",
