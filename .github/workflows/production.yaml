@@ -25,22 +25,22 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # # Run tests
-      # - name: Run Tests
-      #   run: npm test
+      # Run tests
+      - name: Run Tests
+        run: npm test
 
-      # Install Vercel CLI
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      # # Install Vercel CLI
+      # - name: Install Vercel CLI
+      #   run: npm install --global vercel@latest
 
-      # Pull Vercel environment information
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      # # Pull Vercel environment information
+      # - name: Pull Vercel Environment Information
+      #   run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Build project artifacts
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      # # Build project artifacts
+      # - name: Build Project Artifacts
+      #   run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      # Deploy project artifacts to Vercel
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      # # Deploy project artifacts to Vercel
+      # - name: Deploy Project Artifacts to Vercel
+      #   run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
