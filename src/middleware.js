@@ -6,7 +6,7 @@ export function middleware(request) {
 
     response.headers.set(
       "Access-Control-Allow-Origin",
-      "https://thecreeds.site",
+      "*",
     );
 
     response.headers.set(
